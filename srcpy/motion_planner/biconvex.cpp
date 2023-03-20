@@ -61,8 +61,6 @@ PYBIND11_MODULE(biconvex_mpc_cpp, m)
     kd.def("set_mom_tracking_weight", &motion_planner::KinoDynMP::set_mom_tracking_weight);
     kd.def("compute_solve_times", &motion_planner::KinoDynMP::compute_solve_times);
     kd.def("return_solve_times", &motion_planner::KinoDynMP::return_solve_times, py::return_value_policy::reference);
-
-
-
-
+    kd.def("set_warm_starts", &motion_planner::KinoDynMP::set_warm_starts);
+    kd.def("get_Xwm", [](const KinoDynMP &kd) { return kd.X_wm; });
 }

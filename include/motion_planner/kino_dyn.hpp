@@ -30,6 +30,10 @@ namespace motion_planner{
             BiConvexMP dyn;
             ik::InverseKinematics ik;
 
+            Eigen::VectorXd X_wm; // warm start X
+            Eigen::VectorXd F_wm; // warm start F
+            Eigen::VectorXd P_wm; // warm start P
+
 
         private:
             // robot model
@@ -40,9 +44,9 @@ namespace motion_planner{
             double m_; // robot mass
             Eigen::VectorXd X_init;
             Eigen::VectorXd x0;
-            Eigen::VectorXd X_wm; // warm start X
-            Eigen::VectorXd F_wm; // warm start F
-            Eigen::VectorXd P_wm; // warm start P
+            // Eigen::VectorXd X_wm; // warm start X
+            // Eigen::VectorXd F_wm; // warm start F
+            // Eigen::VectorXd P_wm; // warm start P
             
             int n = 0; // number of times kino_dyn has been called
             int dyn_col_;

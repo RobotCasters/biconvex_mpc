@@ -221,6 +221,8 @@ class B1MpcGaitGen:
                         self.cnt_plan[i][j][0] = 1
 
                         if self.cnt_plan[i - 1][j][0] == 1:
+                            # when both the i-th time step and (i-1)-th time step
+                            # are in contact, the foot position does not change
                             self.cnt_plan[i][j][1:4] = self.cnt_plan[i - 1][j][1:4]
                         else:
                             hip_loc = (

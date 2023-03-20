@@ -67,7 +67,7 @@ namespace motion_planner{
         }
         
         prob_data_x.q_.head(prob_data_x.num_vars_ - 9) = -2*X_nom.cwiseProduct(W_X);
-        prob_dasta_x.q_.tail(9) = -2*X_ter.cwiseProduct(W_X_ter);
+        prob_data_x.q_.tail(9) = -2*X_ter.cwiseProduct(W_X_ter);
 
     };
 
@@ -136,7 +136,7 @@ namespace motion_planner{
 
     Eigen::MatrixXd BiConvexMP::return_opt_mom(){
         for (unsigned i = 0; i < n_col_ +1; ++i){
-            mom_opt_(i,0) =   m_*prob_data_x.x_k[9*i+3];
+            mom_opt_(i,0) = m_*prob_data_x.x_k[9*i+3];
             mom_opt_(i,1) = m_*prob_data_x.x_k[9*i+4];
             mom_opt_(i,2) = m_*prob_data_x.x_k[9*i+5];
             mom_opt_(i,3) = m_*prob_data_x.x_k[9*i+6]; // de normalizing the angular momentum

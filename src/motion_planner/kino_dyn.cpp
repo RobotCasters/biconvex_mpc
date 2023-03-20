@@ -63,6 +63,7 @@ namespace motion_planner{
         const auto t4 = std::chrono::steady_clock::now();    
         ik.optimize(x0);
         const auto t5 = std::chrono::steady_clock::now();    
+        
         // Todo: add kino dyn iteration requirement later
         // ik.compute_optimal_com_and_mom(ik_com_opt, ik_mom_opt);
 
