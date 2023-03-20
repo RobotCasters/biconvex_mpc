@@ -1,5 +1,5 @@
 ## This file is a unit test for c++ implementation of centroidal dynamics
-## Author : Avadesh Meduri 
+## Author : Avadesh Meduri
 ## Date : 16/05/2021
 
 import numpy as np
@@ -28,4 +28,3 @@ assert np.linalg.norm(A_x - A_x_cpp) == 0
 assert np.linalg.norm(A_f - A_f_cpp) == 0
 assert np.linalg.norm(b_x - b_x_cpp) == 0
 assert np.linalg.norm(b_f - b_f_cpp) == 0
-

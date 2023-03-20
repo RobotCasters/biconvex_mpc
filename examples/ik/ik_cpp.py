@@ -1,5 +1,5 @@
 ## This is demo for the inverse kinematics C++ version
-## Author : Avadesh Meduri 
+## Author : Avadesh Meduri
 ## Date : 22/04/2021
 
 import time
@@ -21,26 +21,31 @@ T = 1
 q0 = np.array(Solo12Config.initial_configuration)
 x0 = np.concatenate([q0, np.zeros(robot.model.nv)])
 
-stateWeights = np.array([0.] * 3 + [500.] * 3 + [0.01] * (robot.model.nv - 6) \
-                    + [10.] * 6 + [5.0] *(robot.model.nv - 6))
+stateWeights = np.array(
+    [0.0] * 3
+    + [500.0] * 3
+    + [0.01] * (robot.model.nv - 6)
+    + [10.0] * 6
+    + [5.0] * (robot.model.nv - 6)
+)
 
 # print(robot.model.nq, robot.model.nv)
 
-des_pos_fl = np.tile(np.array([0.3946,   0.14695,  0]), (int(T/dt),1))
-des_pos_fr = np.tile(np.array([0.3946,   -0.14695,  0]), (int(T/dt),1))
-des_pos_hl = np.tile(np.array([0.0054,   0.14695,  0]), (int(T/dt),1))
-des_pos_hr = np.tile(np.array([0.0054,   -0.14695,  0]), (int(T/dt),1))
+des_pos_fl = np.tile(np.array([0.3946, 0.14695, 0]), (int(T / dt), 1))
+des_pos_fr = np.tile(np.array([0.3946, -0.14695, 0]), (int(T / dt), 1))
+des_pos_hl = np.tile(np.array([0.0054, 0.14695, 0]), (int(T / dt), 1))
+des_pos_hr = np.tile(np.array([0.0054, -0.14695, 0]), (int(T / dt), 1))
 
-des_vel_fl = np.tile(np.array([0.,   0,  0]), (int(T/dt),1))
-des_vel_fr = np.tile(np.array([0.,   -0,  0]), (int(T/dt),1))
-des_vel_hl = np.tile(np.array([0.,   0,  0]), (int(T/dt),1))
-des_vel_hr = np.tile(np.array([0.,   -0,  0]), (int(T/dt),1))
+des_vel_fl = np.tile(np.array([0.0, 0, 0]), (int(T / dt), 1))
+des_vel_fr = np.tile(np.array([0.0, -0, 0]), (int(T / dt), 1))
+des_vel_hl = np.tile(np.array([0.0, 0, 0]), (int(T / dt), 1))
+des_vel_hr = np.tile(np.array([0.0, -0, 0]), (int(T / dt), 1))
 
-des_com_pos = np.tile(np.array([0.,   0,  0.2]), (int(T/dt),1))
-des_com_pos[:,0] = 0.1*np.linspace(0, len(des_com_pos), len(des_com_pos))
+des_com_pos = np.tile(np.array([0.0, 0, 0.2]), (int(T / dt), 1))
+des_com_pos[:, 0] = 0.1 * np.linspace(0, len(des_com_pos), len(des_com_pos))
 
-des_mom = np.tile(np.array([0.,   0,  0.0, 0, 0, 0]), (int(T/dt),1))
-des_mom[:,0] = 0.1
+des_mom = np.tile(np.array([0.0, 0, 0.0, 0, 0, 0]), (int(T / dt), 1))
+des_mom[:, 0] = 0.1
 
 
 # ik = InverseKinematics(Solo12Config.urdf_path, dt, T)
@@ -65,7 +70,9 @@ des_mom[:,0] = 0.1
 # print(xs.shape)
 
 gg = GaitGenerator(robot, Solo12Config.urdf_path, T, dt)
-gg.create_swing_foot_task(des_pos_fl[0], des_pos_fl[0] + [0.2, 0, 0], 0, 0.4, 0.1, "FL_FOOT", "FL_step", 1e3)
+gg.create_swing_foot_task(
+    des_pos_fl[0], des_pos_fl[0] + [0.2, 0, 0], 0, 0.4, 0.1, "FL_FOOT", "FL_step", 1e3
+)
 gg.create_contact_task(des_pos_fr[0], 0, T, "FR_FOOT", "FR_step", 1e5)
 gg.create_contact_task(des_pos_hl[0], 0, T, "HL_FOOT", "HL_step", 1e5)
 gg.create_contact_task(des_pos_hr[0], 0, T, "HR_FOOT", "HR_step", 1e5)
@@ -73,4 +80,4 @@ gg.create_contact_task(des_pos_hr[0], 0, T, "HR_FOOT", "HR_step", 1e5)
 gg.create_centroidal_task(des_mom, 0, T, "mom track", 1e2)
 
 xs, us = gg.optimize(x0, stateWeights, x0, wt_xreg=5e-3)
-np.savez("../motion_planner/dat_file/ik", xs = xs)
+np.savez("../motion_planner/dat_file/ik", xs=xs)

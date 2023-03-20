@@ -9,9 +9,9 @@ import time
 arr = lambda a: np.array(a).reshape(-1)
 mat = lambda a: np.matrix(a).reshape((-1, 1))
 
-class InverseDynamicsController():
 
-    def __init__(self, robot, eff_arr, pinModel = None, pinData = None, real_robot = False):
+class InverseDynamicsController:
+    def __init__(self, robot, eff_arr, pinModel=None, pinData=None, real_robot=False):
         """
         Input:
             robot : robot object returned by pinocchio wrapper
@@ -76,12 +76,23 @@ class InverseDynamicsController():
         tau_eff = np.zeros(self.nv)
 
         for j in range(N):
-            self.J_arr.append(pin.computeFrameJacobian(self.pinModel, self.pinData, des_q,\
-                     self.pinModel.getFrameId(self.eff_arr[j]), pin.LOCAL_WORLD_ALIGNED).T)
-            tau_eff += np.matmul(self.J_arr[j], np.hstack((fff[j*3:(j+1)*3], np.zeros(3))))
+            self.J_arr.append(
+                pin.computeFrameJacobian(
+                    self.pinModel,
+                    self.pinData,
+                    des_q,
+                    self.pinModel.getFrameId(self.eff_arr[j]),
+                    pin.LOCAL_WORLD_ALIGNED,
+                ).T
+            )
+            tau_eff += np.matmul(
+                self.J_arr[j], np.hstack((fff[j * 3 : (j + 1) * 3], np.zeros(3)))
+            )
 
         tau = (tau_id - tau_eff)[6:]
 
-        tau_gain = -self.kp*(np.subtract(q[7:].T, des_q[7:].T)) - self.kd*(np.subtract(dq[6:].T, des_v[6:].T))
+        tau_gain = -self.kp * (np.subtract(q[7:].T, des_q[7:].T)) - self.kd * (
+            np.subtract(dq[6:].T, des_v[6:].T)
+        )
 
         return tau + tau_gain.T

@@ -18,8 +18,16 @@ from motions.cyclic.talos_stand import still
 from motions.cyclic.talos_walk import walk
 
 
-eff_names = ["leg_right_sole1_fix_joint", "leg_right_sole2_fix_joint", "leg_right_sole3_fix_joint", "leg_right_sole4_fix_joint", \
-             "leg_left_sole1_fix_joint", "leg_left_sole2_fix_joint", "leg_left_sole3_fix_joint", "leg_left_sole4_fix_joint"]
+eff_names = [
+    "leg_right_sole1_fix_joint",
+    "leg_right_sole2_fix_joint",
+    "leg_right_sole3_fix_joint",
+    "leg_right_sole4_fix_joint",
+    "leg_left_sole1_fix_joint",
+    "leg_left_sole2_fix_joint",
+    "leg_left_sole3_fix_joint",
+    "leg_left_sole4_fix_joint",
+]
 
 
 robot = TalosConfig.buildRobotWrapper()
@@ -34,53 +42,95 @@ q0 = np.array(TalosConfig.initial_configuration)
 v0 = pin.utils.zero(pin_robot.model.nv)
 x0 = np.concatenate([q0, pin.utils.zero(pin_robot.model.nv)])
 
-v_des = np.array([0.0,0.0,0.0])
+v_des = np.array([0.0, 0.0, 0.0])
 w_des = 0.0
 
-plan_freq = 0.1 # sec
-update_time = 0.0 # sec (time of lag)
+plan_freq = 0.1  # sec
+update_time = 0.0  # sec (time of lag)
 
 
-kp = np.array(2*[1e2,1e2,1e3,2e3,1e3,1e3] + 
-              2*[1e2,] + 
-              4*[1e2,] + 3*[1e1,] + 
-              4*[1e2,] + 3*[1e1,])
-kd = np.array(2*[1e1,1e1,1e1,2e1,2e1,2e1] + 
-              2*[1.0e1,] + 
-              4*[5e0,] + 3*[1e-1,] + 
-              4*[5e0,] + 3*[1e0,])
+kp = np.array(
+    2 * [1e2, 1e2, 1e3, 2e3, 1e3, 1e3]
+    + 2
+    * [
+        1e2,
+    ]
+    + 4
+    * [
+        1e2,
+    ]
+    + 3
+    * [
+        1e1,
+    ]
+    + 4
+    * [
+        1e2,
+    ]
+    + 3
+    * [
+        1e1,
+    ]
+)
+kd = np.array(
+    2 * [1e1, 1e1, 1e1, 2e1, 2e1, 2e1]
+    + 2
+    * [
+        1.0e1,
+    ]
+    + 4
+    * [
+        5e0,
+    ]
+    + 3
+    * [
+        1e-1,
+    ]
+    + 4
+    * [
+        5e0,
+    ]
+    + 3
+    * [
+        1e0,
+    ]
+)
 
 robot = PyBulletEnv(TalosRobot, q0, v0)
 robot_id_ctrl = InverseDynamicsController(pin_robot, eff_names)
 
-robot_id_ctrl.set_gains(kp,kd)
+robot_id_ctrl.set_gains(kp, kd)
 
 
 q, v = robot.get_state()
 
 # simulation variables
 sim_t = 0.0
-sim_dt = .001
+sim_dt = 0.001
 index = 0
 pln_ctr = 0
 lag = 0
 
 # robot.start_recording("talos_walk.mp4")
 
-for o in range(int(150*(plan_freq/sim_dt))):
+for o in range(int(150 * (plan_freq / sim_dt))):
 
     # this bit has to be put in shared memory
     q, v = robot.get_state()
-    contact_configuration = 8*[1,]
+    contact_configuration = 8 * [
+        1,
+    ]
 
-    tau = robot_id_ctrl.id_joint_torques(q, v, q0, v0, v0, np.zeros(3*8), contact_configuration)
+    tau = robot_id_ctrl.id_joint_torques(
+        q, v, q0, v0, v0, np.zeros(3 * 8), contact_configuration
+    )
     robot.send_joint_command(tau)
     # if pln_ctr == 0:
     #     print("sim_t",sim_t)
     #     gg.plot(q, v, plot_force=True)
     time.sleep(0.0005)
     sim_t += sim_dt
-    pln_ctr = int((pln_ctr + 1)%(plan_freq/sim_dt))
+    pln_ctr = int((pln_ctr + 1) % (plan_freq / sim_dt))
     index += 1
 
 # robot.stop_recording()

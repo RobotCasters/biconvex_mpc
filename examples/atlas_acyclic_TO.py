@@ -16,7 +16,9 @@ pin_robot = AtlasConfig.buildRobotWrapper()
 rmodel = pin_robot.model
 urdf = AtlasConfig.urdf_path
 
-viz = pin.visualize.MeshcatVisualizer(pin_robot.model, pin_robot.collision_model, pin_robot.visual_model)
+viz = pin.visualize.MeshcatVisualizer(
+    pin_robot.model, pin_robot.collision_model, pin_robot.visual_model
+)
 viz.initViewer(open=False)
 viz.loadViewerModel()
 pin_robot = AtlasConfig.buildRobotWrapper()
@@ -27,11 +29,11 @@ x0 = np.concatenate([q0, pin.utils.zero(pin_robot.model.nv)])
 
 plan_freq = 15
 sim_t = 0.0
-sim_dt = .001
+sim_dt = 0.001
 index = 0
 pln_ctr = 0
-update_time = 0.0 # sec (time of lag)
-lag = int(update_time/sim_dt)
+update_time = 0.0  # sec (time of lag)
+lag = int(update_time / sim_dt)
 
 mg = AtlasAcyclicGen(pin_robot, urdf)
 # q, v = pin_robot.get_state()
@@ -55,11 +57,11 @@ viz.display(q0)
 
 v_des = np.array([0.0, 0.0, 0.0])
 w_des = 0.0
-xs_plan, us_plan, f_plan = mg.optimize(q, v, np.round(sim_t,3), v_des, w_des)
-q = xs_plan[0][0:pin_robot.model.nq]
-v = xs_plan[0][pin_robot.model.nq:]
+xs_plan, us_plan, f_plan = mg.optimize(q, v, np.round(sim_t, 3), v_des, w_des)
+q = xs_plan[0][0 : pin_robot.model.nq]
+v = xs_plan[0][pin_robot.model.nq :]
 mg.plot(q, v, plot_force=True)
 
-for ind in range(int(plan_freq/sim_dt)):
-    if(ind%4==0):
-        viz.display(xs_plan[ind][:pin_robot.model.nq])
+for ind in range(int(plan_freq / sim_dt)):
+    if ind % 4 == 0:
+        viz.display(xs_plan[ind][: pin_robot.model.nq])

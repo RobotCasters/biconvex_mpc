@@ -28,20 +28,30 @@ pin_robot = TalosConfig.buildRobotWrapper()
 urdf_path = TalosConfig.urdf_path
 
 
-eff_names = ["leg_right_sole1_fix_joint", "leg_right_sole2_fix_joint", "leg_right_sole3_fix_joint", "leg_right_sole4_fix_joint", \
-             "leg_left_sole1_fix_joint", "leg_left_sole2_fix_joint", "leg_left_sole3_fix_joint", "leg_left_sole4_fix_joint"]
-hip_names = 4*["leg_right_1_joint",] + 4*["leg_left_1_joint",]
+eff_names = [
+    "leg_right_sole1_fix_joint",
+    "leg_right_sole2_fix_joint",
+    "leg_right_sole3_fix_joint",
+    "leg_right_sole4_fix_joint",
+    "leg_left_sole1_fix_joint",
+    "leg_left_sole2_fix_joint",
+    "leg_left_sole3_fix_joint",
+    "leg_left_sole4_fix_joint",
+]
+hip_names = 4 * ["leg_right_1_joint",] + 4 * [
+    "leg_left_1_joint",
+]
 n_eff = len(eff_names)
 
 q0 = np.array(TalosConfig.initial_configuration)
 v0 = pin.utils.zero(pin_robot.model.nv)
 x0 = np.concatenate([q0, pin.utils.zero(pin_robot.model.nv)])
 
-v_des = np.array([0.0,0.0,0.0])
+v_des = np.array([0.0, 0.0, 0.0])
 w_des = 0.0
 
-plan_freq = 1.0 # sec
-update_time = 0.0 # sec (time of lag)
+plan_freq = 1.0  # sec
+update_time = 0.0  # sec (time of lag)
 
 gait_params = jump
 
@@ -57,40 +67,42 @@ q, v = robot.get_state()
 
 # simulation variables
 sim_t = 0.0
-sim_dt = .001
+sim_dt = 0.001
 index = 0
 pln_ctr = 0
 lag = 0
 
 # robot.start_recording("talos_jump.mp4")
 
-for o in range(int(150*(plan_freq/sim_dt))):
+for o in range(int(150 * (plan_freq / sim_dt))):
 
     # this bit has to be put in shared memory
     q, v = robot.get_state()
     if pln_ctr == 0:
         # print("time: ", o/1000)
         # print(q, v)
-        contact_configuration = len(eff_names)*[1,]
+        contact_configuration = len(eff_names) * [
+            1,
+        ]
         pr_st = time.time()
-        xs_plan, us_plan, f_plan = gg.optimize(q, v, np.round(sim_t,3), v_des, w_des)
+        xs_plan, us_plan, f_plan = gg.optimize(q, v, np.round(sim_t, 3), v_des, w_des)
         # Plot if necessary
         # if sim_t >= plot_time:
         # if o/1000 > 1:
         # gg.plot_plan(q, v, plot_force=True)
-            # gg.save_plan("trot")
+        # gg.save_plan("trot")
 
         pr_et = time.time()
         # solve_times.append(pr_et - pr_et)
 
     # first loop assume that trajectory is planned
-    if o < int(plan_freq/sim_dt) - 1:
+    if o < int(plan_freq / sim_dt) - 1:
         xs = xs_plan
         us = us_plan
         f = f_plan
 
     # second loop onwards lag is taken into account
-    elif pln_ctr == lag and o > int(plan_freq/sim_dt)-1:
+    elif pln_ctr == lag and o > int(plan_freq / sim_dt) - 1:
         # Not the correct logic
         # lag = int((1/sim_dt)*(pr_et - pr_st))
         lag = 0
@@ -99,8 +111,15 @@ for o in range(int(150*(plan_freq/sim_dt))):
         f = f_plan[lag:]
         index = 0
 
-    tau = robot_id_ctrl.id_joint_torques(q, v, xs[index][:pin_robot.model.nq].copy(), xs[index][pin_robot.model.nq:].copy()\
-                                , us[index], f[index], contact_configuration)
+    tau = robot_id_ctrl.id_joint_torques(
+        q,
+        v,
+        xs[index][: pin_robot.model.nq].copy(),
+        xs[index][pin_robot.model.nq :].copy(),
+        us[index],
+        f[index],
+        contact_configuration,
+    )
 
     # tau = robot_id_ctrl.id_joint_torques(q, v, q0, v0, v0, np.zeros(3*4), contact_configuration)
     # tau[3:] = 0
@@ -110,7 +129,7 @@ for o in range(int(150*(plan_freq/sim_dt))):
     #     gg.plot(q, v, plot_force=True)
     time.sleep(0.0005)
     sim_t += sim_dt
-    pln_ctr = int((pln_ctr + 1)%(plan_freq/sim_dt))
+    pln_ctr = int((pln_ctr + 1) % (plan_freq / sim_dt))
     index += 1
 
 # robot.stop_recording()

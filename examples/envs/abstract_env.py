@@ -37,8 +37,12 @@ class AbstractEnv:
         height_map = self.env.create_height_map_perlin(raisimTerrain)
         return height_map
 
-    def create_height_map_png(self, x_center, y_center, path_to_png, size, scale, z_offset):
-        height_map = self.env.create_height_map_png(x_center, y_center, path_to_png, size, scale, z_offset)
+    def create_height_map_png(
+        self, x_center, y_center, path_to_png, size, scale, z_offset
+    ):
+        height_map = self.env.create_height_map_png(
+            x_center, y_center, path_to_png, size, scale, z_offset
+        )
         return height_map
 
     def get_ground_reaction_forces(self):

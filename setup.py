@@ -5,11 +5,13 @@ import sys
 from os import path, walk
 from setuptools import setup, find_packages
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'biconvex_mpc'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "biconvex_mpc"))
+
 
 def print_error(*args, **kwargs):
-    """ Print in stderr. """
+    """Print in stderr."""
     print(*args, file=sys.stderr, **kwargs)
+
 
 # Package name.
 package_name = "biconvex_mpc"
@@ -33,13 +35,14 @@ setup(
     name=package_name,
     version="1.0.0",
     package_dir={package_name: package_name},
-    packages=[package for package in find_packages()
-                if package.startswith('py_biconvex_mpc')],
+    packages=[
+        package for package in find_packages() if package.startswith("py_biconvex_mpc")
+    ],
     data_files=data_files_to_install,
     scripts=scripts_list,
     install_requires=[
-          'numpy>=1.10.4',
-      ],
+        "numpy>=1.10.4",
+    ],
     zip_safe=True,
     maintainer="ameduri",
     maintainer_email="am9789@nyu.edu",

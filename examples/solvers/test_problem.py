@@ -10,7 +10,7 @@ from py_biconvex_mpc.motion_planner.biconvex import BiConvexMP
 from robot_properties_solo.config import Solo12Config
 from py_biconvex_mpc.ik.inverse_kinematics import InverseKinematics
 
-#from py_biconvex_mpc.bullet_utils.solo_env import Solo12Env
+# from py_biconvex_mpc.bullet_utils.solo_env import Solo12Env
 
 robot = Solo12Config.buildRobotWrapper()
 n_eff = 4
@@ -18,48 +18,57 @@ m = pin.computeTotalMass(robot.model)
 q0 = np.array(Solo12Config.initial_configuration)
 x0 = np.concatenate([q0, pin.utils.zero(robot.model.nv)])
 
-def test_problem_func(max_iter = 0):
+
+def test_problem_func(max_iter=0):
 
     # cnt plan
-    rt = 0.4 # reartime 
+    rt = 0.4  # reartime
     T = 0.4 + rt + 0.1
     dt = 5e-2
 
-    cnt_plan = [[[ 1.,      0.3946,   0.14695,  0., 0.,  0.4    ],
-                [ 1.,      0.3946,  -0.14695,  0., 0.,  0.4    ],
-                [ 1.,      0.0054,   0.14695,  0., 0.,  0.4    ],
-                [ 1.,      0.0054,  -0.14695,  0., 0.,  0.4    ]],
-            
-                [[ 0.,      0.3946,   0.14695,  0., 0.4, 0.4 + rt   ],
-                [ 0.,      0.3946,  -0.14695,  0., 0.4, 0.4 + rt   ],
-                [ 0.,      0.0054,   0.14695,  0., 0.4, 0.4 + rt   ],
-                [ 0.,      0.0054,  -0.14695,  0., 0.4, 0.4 + rt   ]],
-            
-                [[ 1.,      0.3946,   0.14695,  0., 0.4 + rt, T    ],
-                [ 1.,      0.3946,  -0.14695,  0., 0.4 + rt, T    ],
-                [ 1.,      0.0054,   0.14695,  0., 0.4 + rt, T    ],
-                [ 1.,      0.0054,  -0.14695,  0., 0.4 + rt, T    ]]]
+    cnt_plan = [
+        [
+            [1.0, 0.3946, 0.14695, 0.0, 0.0, 0.4],
+            [1.0, 0.3946, -0.14695, 0.0, 0.0, 0.4],
+            [1.0, 0.0054, 0.14695, 0.0, 0.0, 0.4],
+            [1.0, 0.0054, -0.14695, 0.0, 0.0, 0.4],
+        ],
+        [
+            [0.0, 0.3946, 0.14695, 0.0, 0.4, 0.4 + rt],
+            [0.0, 0.3946, -0.14695, 0.0, 0.4, 0.4 + rt],
+            [0.0, 0.0054, 0.14695, 0.0, 0.4, 0.4 + rt],
+            [0.0, 0.0054, -0.14695, 0.0, 0.4, 0.4 + rt],
+        ],
+        [
+            [1.0, 0.3946, 0.14695, 0.0, 0.4 + rt, T],
+            [1.0, 0.3946, -0.14695, 0.0, 0.4 + rt, T],
+            [1.0, 0.0054, 0.14695, 0.0, 0.4 + rt, T],
+            [1.0, 0.0054, -0.14695, 0.0, 0.4 + rt, T],
+        ],
+    ]
 
     cnt_plan = np.array(cnt_plan)
 
     # initial and ter state
     X_init = np.zeros(9)
-    X_init[0:3] = pin.centerOfMass(robot.model, robot.data, q0,  pin.utils.zero(robot.model.nv))
+    X_init[0:3] = pin.centerOfMass(
+        robot.model, robot.data, q0, pin.utils.zero(robot.model.nv)
+    )
     X_ter = X_init.copy()
 
-    X_nom = np.zeros((9*int(np.round(T/dt,2))))
+    X_nom = np.zeros((9 * int(np.round(T / dt, 2))))
     X_nom[2::9] = X_init[2]
 
     # weights
     W_X = np.array([1e-5, 1e-5, 1e-5, 1e-4, 1e-4, 1e-4, 3e3, 3e3, 3e3])
 
-    W_X_ter = 10*np.array([1e+5, 1e+5, 1e+5, 1e+5, 1e+5, 1e+5, 1e+5, 1e+5, 1e+5])
+    W_X_ter = 10 * np.array([1e5, 1e5, 1e5, 1e5, 1e5, 1e5, 1e5, 1e5, 1e5])
 
-    W_F = np.array(4*[1e+1, 1e+1, 1e+1])
+    W_F = np.array(4 * [1e1, 1e1, 1e1])
 
-    rho = 1e+5 # penalty on dynamic constraint violation
+    rho = 1e5  # penalty on dynamic constraint violation
 
-    # constraints 
+    # constraints
     bx = 0.25
     by = 0.25
     bz = 0.25
@@ -68,7 +77,7 @@ def test_problem_func(max_iter = 0):
     fz_max = 20
 
     # optimization
-    mp = BiConvexMP(m, dt, T, n_eff, rho = rho)
+    mp = BiConvexMP(m, dt, T, n_eff, rho=rho)
     mp.create_contact_array(cnt_plan)
     mp.create_bound_constraints(bx, by, bz, fx_max, fy_max, fz_max)
 

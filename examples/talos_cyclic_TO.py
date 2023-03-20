@@ -30,19 +30,29 @@ urdf_path = TalosConfig.urdf_path
 # viz.initViewer(open=False)
 # viz.loadViewerModel()
 
-eff_names = ["leg_right_sole1_fix_joint", "leg_right_sole2_fix_joint", "leg_left_sole1_fix_joint", "leg_left_sole2_fix_joint"]
-hip_names = ["leg_left_1_joint", "leg_left_1_joint", "leg_right_1_joint", "leg_right_1_joint"]
+eff_names = [
+    "leg_right_sole1_fix_joint",
+    "leg_right_sole2_fix_joint",
+    "leg_left_sole1_fix_joint",
+    "leg_left_sole2_fix_joint",
+]
+hip_names = [
+    "leg_left_1_joint",
+    "leg_left_1_joint",
+    "leg_right_1_joint",
+    "leg_right_1_joint",
+]
 n_eff = len(eff_names)
 
 q0 = np.array(TalosConfig.initial_configuration)
 v0 = pin.utils.zero(pin_robot.model.nv)
 x0 = np.concatenate([q0, pin.utils.zero(pin_robot.model.nv)])
 
-v_des = np.array([0.5,0.0,0.0])
+v_des = np.array([0.5, 0.0, 0.0])
 w_des = 0.0
 
-plan_freq = 0.1 # sec
-update_time = 0.0 # sec (time of lag)
+plan_freq = 0.1  # sec
+update_time = 0.0  # sec (time of lag)
 
 gait_params = walk
 
@@ -58,7 +68,7 @@ v = v0
 
 # simulation variables
 sim_t = 0.0
-sim_dt = .001
+sim_dt = 0.001
 index = 0
 pln_ctr = 0
 lag = 0
@@ -80,9 +90,9 @@ plot_time = np.inf
 
 v_des = np.array([0.0, 0.0, 0.0])
 w_des = 0.0
-xs_plan, us_plan, f_plan = gg.optimize(q, v, np.round(sim_t,3), v_des, w_des)
-q = xs_plan[0][0:pin_robot.model.nq]
-v = xs_plan[0][pin_robot.model.nq:]
+xs_plan, us_plan, f_plan = gg.optimize(q, v, np.round(sim_t, 3), v_des, w_des)
+q = xs_plan[0][0 : pin_robot.model.nq]
+v = xs_plan[0][pin_robot.model.nq :]
 gg.plot(q, v, plot_force=True)
 # print(np.size(xs_plan[:][:pin_robot.model.nq]))
 

@@ -5,8 +5,8 @@
 import pybullet
 from bullet_utils.env import BulletEnvWithGround
 
-class PyBulletEnv:
 
+class PyBulletEnv:
     def __init__(self, robot, q0, v0):
 
         print("loading bullet")
@@ -32,7 +32,7 @@ class PyBulletEnv:
             tau : input torque
         """
         self.robot.send_joint_command(tau)
-        self.env.step() # You can sleep here if you want to slow down the replay
+        self.env.step()  # You can sleep here if you want to slow down the replay
 
     def get_current_contacts(self):
         """

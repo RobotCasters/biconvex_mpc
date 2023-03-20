@@ -14,21 +14,23 @@ m = 2
 dt = 0.1
 T = 0.3
 n_eff = 2
-n_col = int(np.round(T/dt, 2))
+n_col = int(np.round(T / dt, 2))
 
 ## X, F
 
-X = np.ones(9*n_col + 9)
-F = np.ones(n_eff*3*n_col)
+X = np.ones(9 * n_col + 9)
+F = np.ones(n_eff * 3 * n_col)
 # X[0::2] = 2.0
 ## r, cnt_plan
-r = np.array([[[0.5, 0, 0], [-0.0, 0, 0]],
-              [[0.0, 0, 0], [-0.5, 0, 0]],
-              [[0.0, 0, 0], [-0.0, 0, 0]]])
+r = np.array(
+    [
+        [[0.5, 0, 0], [-0.0, 0, 0]],
+        [[0.0, 0, 0], [-0.5, 0, 0]],
+        [[0.0, 0, 0], [-0.0, 0, 0]],
+    ]
+)
 
-cnt_plan = np.array([[1,0],
-                     [0,1],
-                     [1,1]])
+cnt_plan = np.array([[1, 0], [0, 1], [1, 1]])
 
 dyn = CentroidalDynamics(m, dt, T, n_eff)
 A_F_mat, b_F_mat = dyn.compute_F_mat(F, r, cnt_plan)
