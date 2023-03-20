@@ -72,6 +72,9 @@ for o in range(int(1000 * (plan_freq / sim_dt))):
 
     contact_configuration = robot.get_current_contacts()
 
+    if o == 8000:
+        w_des = -w_des
+
     if o == int(100 * (plan_freq / sim_dt)):
         gait_params = trot
         gg.update_gait_params(gait_params, sim_t)
