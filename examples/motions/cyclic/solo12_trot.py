@@ -95,7 +95,7 @@ trot_turn.swing_wt = [
         1e4,
     ],
 ]
-trot_turn.cent_wt = [0 * 5e1, 5e2]
+trot_turn.cent_wt = [3 * [0 * 5e1], 6 * [5e2]]
 trot_turn.step_ht = 0.05
 trot_turn.nom_ht = 0.2
 trot_turn.reg_wt = [5e-2, 1e-5]
@@ -105,7 +105,8 @@ trot_turn.W_X = np.array([1e-5, 1e-5, 1e5, 1e1, 1e1, 2e2, 1e4, 1e4, 1e5])
 trot_turn.W_X_ter = 10 * np.array([1e5, 1e-5, 1e5, 1e1, 1e1, 2e2, 1e5, 1e5, 1e5])
 trot_turn.W_F = np.array(4 * [1e1, 1e1, 1e1])
 trot_turn.rho = 5e4
-trot_turn.ori_correction = [0.0, 0.5, 0.4]
+# trot_turn.ori_correction = [0.0, 0.5, 0.4]
+trot_turn.ori_correction = [0.0, 0.0, 0.0]
 trot_turn.gait_horizon = 1.0
 trot_turn.kp = 3.0
 trot_turn.kd = 0.05

@@ -5,6 +5,7 @@ from inverse_kinematics_cpp import InverseKinematics
 from biconvex_mpc_cpp import BiconvexMP, KinoDynMP
 from gait_planner_cpp import GaitPlanner
 from matplotlib import pyplot as plt
+from pdb import set_trace
 
 
 class B1MpcGaitGen:
@@ -182,6 +183,8 @@ class B1MpcGaitGen:
         rpy_vector[0] = 0.0
         rpy_vector[1] = 0.0
         R = pin.rpy.rpyToMatrix(rpy_vector)
+
+        print("yaw: {}".format(rpy_vector[2]))
 
         vtrack = v_des[
             0:2
@@ -415,6 +418,7 @@ class B1MpcGaitGen:
         des_quat = pin.Quaternion(pin.rpy.rpyToMatrix(rpy_vector))
 
         amom = self.compute_ori_correction(q, des_quat.coeffs())
+        print(f"Angular Momentum: {amom}")
 
         # Set terminal references
         X_ter[0:2] = (
@@ -466,6 +470,7 @@ class B1MpcGaitGen:
 
         # reseting origin (causes scaling issues I think otherwise)
         q[0:2] = 0
+
         ## TODO: Needs to be done properly so it is not in the demo file
         if w_des != 0:
             ori_des = q[3:7]
@@ -481,6 +486,10 @@ class B1MpcGaitGen:
         self.create_cnt_plan(q, v, t, v_des, w_des)
         # Creates costs for IK and Dynamics
         self.create_costs(q, v, v_des, w_des, ori_des)
+
+        print("--------------------------")
+        print(self.cnt_plan[0, :, :])
+        print("--------------------------")
 
         t2 = time.time()
 

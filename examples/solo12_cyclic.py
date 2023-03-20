@@ -3,15 +3,15 @@
 ## Date : 21/04/2021
 
 import time
+from pdb import set_trace
+
 import numpy as np
 import pinocchio as pin
-
-from robot_properties_solo.solo12wrapper import Solo12Robot, Solo12Config
-from mpc.abstract_cyclic_gen import SoloMpcGaitGen
-from motions.cyclic.solo12_trot import trot
-
-from envs.pybullet_env import PyBulletEnv
 from controllers.robot_id_controller import InverseDynamicsController
+from envs.pybullet_env import PyBulletEnv
+from motions.cyclic.solo12_trot import trot, trot_turn
+from mpc.abstract_cyclic_gen import SoloMpcGaitGen
+from robot_properties_solo.solo12wrapper import Solo12Config, Solo12Robot
 
 ## robot config and init
 pin_robot = Solo12Config.buildRobotWrapper()
@@ -20,13 +20,19 @@ urdf_path = Solo12Config.urdf_path
 n_eff = 4
 q0 = np.array(Solo12Config.initial_configuration)
 q0[0:2] = 0.0
+# q0[3] = 0.0
+# q0[4] = 0.0
+# q0[5] = -1.0
+# q0[6] = 0.0
+
+# set_trace()
 
 v0 = pin.utils.zero(pin_robot.model.nv)
 x0 = np.concatenate([q0, pin.utils.zero(pin_robot.model.nv)])
 f_arr = ["FL_FOOT", "FR_FOOT", "HL_FOOT", "HR_FOOT"]
 
-v_des = np.array([0.5, 0.0, 0.0])
-w_des = 0.0
+v_des = np.array([0.2, 0.0, 0.0])
+w_des = -0.2
 
 plan_freq = 0.05  # sec
 update_time = 0.0  # sec (time of lag)
@@ -37,7 +43,7 @@ index = 0
 pln_ctr = 0
 
 ## Motion
-gait_params = trot
+gait_params = trot_turn
 lag = int(update_time / sim_dt)
 gg = SoloMpcGaitGen(pin_robot, urdf_path, x0, plan_freq, q0, None)
 
@@ -51,9 +57,22 @@ plot_time = 0  # Time to start plotting
 
 solve_times = []
 
-for o in range(int(150 * (plan_freq / sim_dt))):
+for o in range(int(10000 * (plan_freq / sim_dt))):
     # this bit has to be put in shared memory
     q, v = robot.get_state()
+
+    R = pin.Quaternion(np.array(q[3:7])).toRotationMatrix()
+    rpy_vector = pin.rpy.matrixToRpy(R)
+    rpy_vector[2] = 0.0
+    fake_quat = pin.Quaternion(pin.rpy.rpyToMatrix(rpy_vector))
+    # set_trace()
+
+    q[3] = fake_quat[0]
+    q[4] = fake_quat[1]
+    q[5] = fake_quat[2]
+    q[6] = fake_quat[3]
+
+    print(f"q: {q}")
 
     # if o == int(50*(plan_freq/sim_dt)):
     #     gait_params = trot

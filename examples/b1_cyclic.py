@@ -27,8 +27,8 @@ v0 = pin.utils.zero(pin_robot.model.nv)
 x0 = np.concatenate([q0, pin.utils.zero(pin_robot.model.nv)])
 f_arr = ["LF_FOOT", "LH_FOOT", "RF_FOOT", "RH_FOOT"]
 
-v_des = np.array([0.3, 0.0, 0.0])
-w_des = 0.00
+v_des = np.array([0.5, 0.0, 0.0])
+w_des = 0.01
 
 plan_freq = 0.05  # sec
 update_time = 0.02  # sec (time of lag)
@@ -54,13 +54,21 @@ plot_time = 0  # Time to start plotting
 solve_times = []
 
 p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
-robot.start_recording("b1_slow_stepping.mp4")
+# robot.start_recording("b1_slow_stepping.mp4")
 
-for o in range(int(200 * (plan_freq / sim_dt))):
+for o in range(int(1000 * (plan_freq / sim_dt))):
     # this bit has to be put in shared memory
     q, v = robot.get_state()
 
-    print(q[2])
+    R = pin.Quaternion(np.array(q[3:7])).toRotationMatrix()
+    rpy_vector = pin.rpy.matrixToRpy(R)
+    rpy_vector[2] = 0.0
+    fake_quat = pin.Quaternion(pin.rpy.rpyToMatrix(rpy_vector))
+
+    q[3] = fake_quat[0]
+    q[4] = fake_quat[1]
+    q[5] = fake_quat[2]
+    q[6] = fake_quat[3]
 
     contact_configuration = robot.get_current_contacts()
 
@@ -117,4 +125,4 @@ for o in range(int(200 * (plan_freq / sim_dt))):
     index += 1
 
 
-robot.stop_recording()
+# robot.stop_recording()

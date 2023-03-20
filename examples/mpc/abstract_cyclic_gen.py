@@ -182,10 +182,10 @@ class SoloMpcGaitGen:
 
         # Get current rotation
         R = pin.Quaternion(np.array(q[3:7])).toRotationMatrix()
-        rpy_vector = pin.rpy.matrixToRpy(R)
-        rpy_vector[0] = 0.0
-        rpy_vector[1] = 0.0
-        R = pin.rpy.rpyToMatrix(rpy_vector)
+        # rpy_vector = pin.rpy.matrixToRpy(R)
+        # rpy_vector[0] = 0.0
+        # rpy_vector[1] = 0.0
+        # R = pin.rpy.rpyToMatrix(rpy_vector)
 
         vtrack = v_des[
             0:2
@@ -418,6 +418,10 @@ class SoloMpcGaitGen:
 
         amom = self.compute_ori_correction(q, des_quat.coeffs())
 
+        # print(f"Angular Momentum: {amom}")
+        # print("*******************************")
+        # set_trace()
+
         # Set terminal references
         X_ter[0:2] = (
             self.X_init[0:2]
@@ -436,7 +440,6 @@ class SoloMpcGaitGen:
             yaw_momentum = np.matmul(self.I_composite_b, [0.0, 0.0, w_des])[2]
             self.X_nom[8::9] = yaw_momentum
             X_ter[8] = yaw_momentum
-            # print(yaw_momentum)
 
         # Setup dynamic optimization costs
         bounds = np.tile(
@@ -485,6 +488,10 @@ class SoloMpcGaitGen:
         self.create_costs(q, v, v_des, w_des, ori_des)
 
         t2 = time.time()
+
+        print("--------------------------")
+        print(self.cnt_plan[0, :, :])
+        print("--------------------------")
 
         # pinocchio complains otherwise
         q = pin.normalize(self.rmodel, q)
