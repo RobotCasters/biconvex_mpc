@@ -20,8 +20,6 @@ namespace motion_planner{
             fista_x.set_l0(2.25e6);
             fista_f.set_l0(506.25);
 
-
-
             //Use Second Order Cone Projection
             fista_f.set_soc_true();
     };
@@ -69,7 +67,7 @@ namespace motion_planner{
         }
         
         prob_data_x.q_.head(prob_data_x.num_vars_ - 9) = -2*X_nom.cwiseProduct(W_X);
-        prob_data_x.q_.tail(9) = -2*X_ter.cwiseProduct(W_X_ter);
+        prob_dasta_x.q_.tail(9) = -2*X_ter.cwiseProduct(W_X_ter);
 
     };
 

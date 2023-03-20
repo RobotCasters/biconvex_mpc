@@ -5,11 +5,12 @@ project(biconvex_mpc VERSION 0.0.1)
 # Set C++ 17 as standard 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX})
 
 # Configure packages
 
 add_subdirectory(extern) # for pybind11
-find_package(pybind11 CONFIG REQUIRED)
+# find_package(pybind11 CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 # robot packages
